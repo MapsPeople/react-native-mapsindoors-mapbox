@@ -8,6 +8,30 @@ Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/refe
 
 `$ npm install @mapsindoors/react-native-maps-indoors-mapbox`
 
+### Expo
+
+This library includes an expo plugin to support native integration.
+To enable it, you need to add the configuration in your expo configuration.
+
+```json
+// app.json
+
+{
+  "expo": {
+    // ... your configuration
+    "plugins": [
+      [
+        "@mapsindoors/react-native-maps-indoors-mapbox/app.plugin.js", // plugin ref
+        {
+          "publicToken": "PUBLIC_TOKEN", // your map public token
+          "downloadToken": "DOWNLOAD_TOKEN" // your download token
+        }
+      ]
+    ]
+  }
+}
+```
+
 ### iOS
 
 The MapsIndoors SDK requires iOS 13, so make sure that your podfile is configured for iOS 13.
@@ -99,7 +123,8 @@ allprojects {
 This snippet shows you how to set up MapsIndoors in a React Native application.
 
 ```javascript
-import MapsIndoors, { MapControl, MapView } from 'react-native-maps-indoors';
+import { Dimensions, NativeEventEmitter } from "react-native";
+import MapsIndoors, { MapControl, MapView, MPMapConfig } from 'react-native-maps-indoors';
 ...
 //Function to initialize mapsindoors and mapcontrol. To load a solution and show data onto the map.
 const loadMapsIndoors = () => {
