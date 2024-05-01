@@ -10,6 +10,20 @@ Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/refe
 
 ### Expo
 
+This library implements native modules and can't be used with ExpoGO, developments build is required (https://docs.expo.dev/develop/development-builds/introduction/)
+
+To build and run correctly, the native ios linkage required to being set as dynamic.
+Project configuration can be done with the expo module expo-build-properties.
+
+with npx :  
+`$ npx expo install expo-build-properties`
+
+with npm :  
+`$ npm install expo-build-properties`
+
+with yarn :  
+`$ yarn add expo-build-properties`
+
 This library includes an expo plugin to support native integration.
 To enable it, you need to add the configuration in your expo configuration.
 
@@ -25,6 +39,14 @@ To enable it, you need to add the configuration in your expo configuration.
         {
           "publicToken": "PUBLIC_TOKEN", // your map public token
           "downloadToken": "DOWNLOAD_TOKEN" // your download token
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "dynamic" // force dynamic linkage
+          }
         }
       ]
     ]
