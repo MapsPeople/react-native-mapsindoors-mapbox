@@ -131,6 +131,7 @@ const withiOSSecret = (token) => (config) => {
       if (!exists) {
         // no previous conf, write new one
         fs.writeFileSync(netrc, conf, { flag: "w" });
+        fs.chmodSync(netrc, 0o600);
       } else {
         // get content
         let content = fs.readFileSync(netrc, "utf-8");
