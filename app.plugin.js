@@ -112,6 +112,7 @@ const withTokenInfoPlist = (token) => (config) => {
 /**
  * Plugin to add mapsindoors user system setup
  * @param {*} token private token to set
+ * @param {*} config expo project config
  */
 const withiOSSecret = (token) => (config) => {
   return withDangerousMod(config, [
@@ -194,6 +195,65 @@ const withPodfile = (config) => {
 };
 
 /**
+ * Plugin to add podfile linkage script script
+ * @param {*} staticPods true if project is build as static, false/undefined if build as dynamic
+ * @param {*} config expo project config
+ * @returns modified config
+ */
+const withStaticLinkage = (staticPods) => (config) => {
+  if (!staticPods) {
+    return config;
+  }
+
+  return withDangerousMod(config, [
+    "ios",
+    (modConf) => {
+      const podfile = path.join(
+        modConf.modRequest.platformProjectRoot,
+        "Podfile"
+      );
+
+      let contents = fs.readFileSync(podfile, "utf-8");
+
+      if (!contents.includes("pre_install do |installer|")) {
+        // add preinstall script if not present
+        contents = contents.replace(
+          `post_install do |installer|`,
+          `pre_install do |installer|
+  end
+          
+  post_install do |installer|`
+        );
+      }
+
+      // complete script with dynamic linkage for this lib
+      contents = contents.replace(
+        `pre_install do |installer|`,
+        `dynamic_frameworks = ["MapboxMaps", "MapboxCoreMaps", "MapboxCommon", "MapboxMobileEvents", "MapboxDirections", "Polyline", "Turf"]
+
+  # override default static linkage
+  pre_install do |installer|
+    installer.pod_targets.each do |pod|
+      if dynamic_frameworks.include?(pod.name)
+        puts "Overriding the static_framework? method for #{pod.name}"
+        def pod.static_framework?;
+          false
+        end
+        def pod.build_type;
+          Pod::BuildType.dynamic_framework
+        end
+      end
+    end`
+      );
+
+      fs.writeFileSync(podfile, contents, "utf8");
+
+      return modConf;
+    },
+  ]);
+};
+
+/**
  * Combine Expo configuration and properties
  * @param {*} config expo project config
  * @param {*} {apiKey} api key to set
@@ -203,7 +263,7 @@ const withPodfile = (config) => {
  */
 const withMapsPeopleMapbox = (
   config,
-  { apiKey, downloadToken, publicToken }
+  { apiKey, downloadToken, publicToken, staticPods }
 ) => {
   const plugins = [
     withGradleProps(downloadToken),
@@ -212,6 +272,7 @@ const withMapsPeopleMapbox = (
     withTokenInfoPlist(publicToken),
     withiOSSecret(downloadToken),
     withPodfile,
+    withStaticLinkage(staticPods),
   ];
 
   return withPlugins(config, plugins);
