@@ -8,6 +8,45 @@ Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/refe
 
 `$ npm install @mapsindoors/react-native-maps-indoors-mapbox`
 
+### Expo
+
+This library implements native modules and can't be used with ExpoGO, developments build is required (https://docs.expo.dev/develop/development-builds/introduction/)
+
+To build and run correctly, the native ios linkage required to being set as dynamic.
+Project configuration can be done with the expo module expo-build-properties.
+
+with npx :  
+`$ npx expo install expo-build-properties`
+
+with npm :  
+`$ npm install expo-build-properties`
+
+with yarn :  
+`$ yarn add expo-build-properties`
+
+This library includes an expo plugin to support native integration.
+To enable it, you need to add the configuration in your expo configuration.
+
+```json
+// app.json
+
+{
+  "expo": {
+    // ... your configuration
+    "plugins": [
+      [
+        "@mapsindoors/react-native-maps-indoors-mapbox/app.plugin.js", // plugin ref
+        {
+          "publicToken": "PUBLIC_TOKEN", // your map public token
+          "downloadToken": "DOWNLOAD_TOKEN", // your download token
+          "staticPods": true // OPTIONAL, add if your project use static linkage for pods (ex: "useFrameworks": "static" with expo-build-properties)
+        }
+      ]
+    ]
+  }
+}
+```
+
 ### iOS
 
 The MapsIndoors SDK requires iOS 13, so make sure that your podfile is configured for iOS 13.
@@ -49,7 +88,7 @@ To get the underlying Mapbox to function, you need to perform the following step
 1. Navigate to `android/app/src/main/res/value`.
 2. Create a file in this folder called `mapbox_access_token.xml`.
 3. Copy and paste the below code snippet and replace `YOUR_KEY_HERE` with your Mapbox api key.
-​
+   ​
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -67,7 +106,7 @@ The plugin Gradle project has trouble resolving the MapsIndoors dependency, so t
 1. Navigate to the app `gradle.properties` and add the value MAPBOX_DOWNLOADS_TOKEN with your Mapbox download access token.
 2. Navigate to the app's project level `build.gradle`.
 3. add `maven { url 'https://maven.mapsindoors.com/' }` to `allprojects`/`repositories` as well as the Mapbox maven
-​
+   ​
 
 ```groovy
 allprojects {
@@ -99,7 +138,8 @@ allprojects {
 This snippet shows you how to set up MapsIndoors in a React Native application.
 
 ```javascript
-import MapsIndoors, { MapControl, MapView } from 'react-native-maps-indoors';
+import { Dimensions, NativeEventEmitter } from "react-native";
+import MapsIndoors, { MapControl, MapView, MPMapConfig } from 'react-native-maps-indoors';
 ...
 //Function to initialize mapsindoors and mapcontrol. To load a solution and show data onto the map.
 const loadMapsIndoors = () => {
@@ -130,20 +170,20 @@ render() {
 ### Showing a route
 
 ```javascript
-  const showRoute = async () => {
-    let point = new MPPoint(57.0580431, 9.9505475);
-    let point2 = new MPPoint(57.0581638, 9.9507732, 10);
-    var directionsService = await MPDirectionsService.create();
+const showRoute = async () => {
+  let point = new MPPoint(57.0580431, 9.9505475);
+  let point2 = new MPPoint(57.0581638, 9.9507732, 10);
+  var directionsService = await MPDirectionsService.create();
 
-    //Optional query parameters for the route.
-    directionsService.setIsDeparture(true);
-    directionsService.setTime(Date.now());
-    directionsService.setTravelMode('bicycling');
+  //Optional query parameters for the route.
+  directionsService.setIsDeparture(true);
+  directionsService.setTime(Date.now());
+  directionsService.setTravelMode("bicycling");
 
-    var route = await directionsService.getRoute(point, point2);
-    directionsRenderer = new MPDirectionsRenderer(NativeEventEmitter);
-    directionsRenderer.setRoute(route);
-  };
+  var route = await directionsService.getRoute(point, point2);
+  directionsRenderer = new MPDirectionsRenderer(NativeEventEmitter);
+  directionsRenderer.setRoute(route);
+};
 ```
 
 ### Searching locations
@@ -154,12 +194,18 @@ It mathces in the locations' descriptions, names, and external IDs to the query 
 
 ```javascript
 const searchForParking = async (point: MPPoint) => {
-    let query = MPQuery.create({query: "parking",
-                                near: point,
-                                queryProperties: [MPLocationPropertyNames.description, MPLocationPropertyNames.name, MPLocationPropertyNames.externalId]});
-    let filter = MPFilter.create({take: 10});
-    let parkingLotsNearPoint = await MapsIndoors.getLocationsAsync(query, filter);
-}
+  let query = MPQuery.create({
+    query: "parking",
+    near: point,
+    queryProperties: [
+      MPLocationPropertyNames.description,
+      MPLocationPropertyNames.name,
+      MPLocationPropertyNames.externalId,
+    ],
+  });
+  let filter = MPFilter.create({ take: 10 });
+  let parkingLotsNearPoint = await MapsIndoors.getLocationsAsync(query, filter);
+};
 ```
 
 ### Changing the look with DisplayRules

@@ -11,7 +11,8 @@
         "index.ts",
         "ios",
         "react-native-maps-indoors-mapbox.podspec",
-        "!android/build"
+        "!android/build",
+        "app.plugin.js"
     ],
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
