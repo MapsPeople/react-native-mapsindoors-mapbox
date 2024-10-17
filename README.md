@@ -2,7 +2,7 @@
 
 ## Documentation
 
-Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.1.0/index.html) to get an overview of what the MapsIndoors SDK offers.
+Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.1.1/index.html) to get an overview of what the MapsIndoors SDK offers.
 
 ## Getting started
 
@@ -26,7 +26,6 @@ target 'MyApp' do
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '14.0'
-        config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
     end
    end
 end
