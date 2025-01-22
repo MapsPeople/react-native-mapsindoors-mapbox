@@ -93,6 +93,10 @@ public class MapsIndoorsViewManager extends ViewGroupManager<MapView> {
                     CompassUtils.getCompass(view).setEnabled(false);
                 }
             }
+
+            if (!args.isNull(3)) {
+                view.getMapboxMap().loadStyle(args.getString(3));
+            }
         }
     }
 

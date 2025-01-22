@@ -1,7 +1,7 @@
 {
     "name": "@mapsindoors/react-native-maps-indoors-mapbox",
     "title": "React Native MapsIndoors Mapbox",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "description": "React Native MapsIndoors component with mapbox",
     "react-native": "index.ts",
     "files": [

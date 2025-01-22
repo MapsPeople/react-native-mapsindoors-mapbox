@@ -20,7 +20,9 @@ class MapsIndoorsViewManager : RCTViewManager {
                             zoom: 2,
                             pitch: 0
                         )
+        
         let options = MapInitOptions(cameraOptions: cameraOptions)
+        
         
         mapView = MapView(frame: CGRect(x: 0, y: 0, width: 64, height: 64), mapInitOptions: options)
         
@@ -30,7 +32,7 @@ class MapsIndoorsViewManager : RCTViewManager {
         return mapView!
     }
 
-    @objc func create(_ node: NSNumber, nodeAgain: NSNumber, camera: String, showCompass: Bool) {
+    @objc func create(_ node: NSNumber, nodeAgain: NSNumber, camera: String, showCompass: Bool, mapboxMapStyle: String?) {
         let decoder = JSONDecoder()
 
         DispatchQueue.main.async {
@@ -44,6 +46,13 @@ class MapsIndoorsViewManager : RCTViewManager {
         guard let position = try? decoder.decode(CameraPosition.self, from: camera.data(using: .utf8)!) else {
             return
         }
+        
+        if mapboxMapStyle != nil {
+            DispatchQueue.main.async {
+                self.mapView?.mapboxMap.mapStyle = MapStyle(uri: StyleURI(rawValue: mapboxMapStyle!)!)
+            }
+        }
+        
         
         DispatchQueue.main.async {
             var update: CameraOptions
@@ -166,6 +175,9 @@ class MapBoxView: RCMapView {
         }
         if let showRoadLabels = config["showRoadLabels"] as? Bool {
             mapConfig.setShowRoadLabels(show: showRoadLabels)
+        }
+        if let useMapsIndoorsStyle = config["useDefaultMapsIndoorsStyle"] as? Bool {
+            mapConfig.useMapsIndoorsStyle(value: useMapsIndoorsStyle)
         }
         return mapConfig
     }

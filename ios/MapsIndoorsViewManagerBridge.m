@@ -7,5 +7,6 @@ RCT_EXTERN_METHOD(requiresMainQueueSetup)
     RCT_EXTERN_METHOD(create:(nonnull NSNumber) node
                   nodeAgain:(nonnull NSNumber) nodeAgain
                   camera: (NSString*) camera
-                  showCompass: (BOOL) showCompass)
+                  showCompass: (BOOL) showCompass
+                  mapboxMapStyle: (NSString*) mapboxMapStyle)
 @end
