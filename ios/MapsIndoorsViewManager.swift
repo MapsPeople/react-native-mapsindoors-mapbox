@@ -179,6 +179,14 @@ class MapBoxView: RCMapView {
         if let useMapsIndoorsStyle = config["useDefaultMapsIndoorsStyle"] as? Bool {
             mapConfig.useMapsIndoorsStyle(value: useMapsIndoorsStyle)
         }
+        if let style = config["mapboxMapStyle"] as? String, !style.isEmpty {
+            DispatchQueue.main.async { [mapboxView] in
+                if let uri = StyleURI(rawValue: style) {
+                    mapboxView.mapboxMap.mapStyle = MapStyle(uri: uri)
+                }
+            }
+        }
+
         return mapConfig
     }
 }
