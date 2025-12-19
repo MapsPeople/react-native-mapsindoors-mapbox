@@ -18,6 +18,8 @@ import com.google.gson.Gson;
 import com.mapbox.geojson.Point;
 import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.CameraState;
+import com.mapbox.maps.GlyphsRasterizationMode;
+import com.mapbox.maps.GlyphsRasterizationOptions;
 import com.mapbox.maps.MapInitOptions;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.plugin.compass.CompassUtils;
@@ -54,7 +56,9 @@ public class MapsIndoorsViewManager extends ViewGroupManager<MapView> {
     @NonNull
     @Override
     protected MapView createViewInstance(@NonNull ThemedReactContext reactContext) {
-        MapInitOptions options = new MapInitOptions(reactContext, MapInitOptions.Companion.getDefaultMapOptions(reactContext), MapInitOptions.Companion.getDefaultPluginList(), new CameraOptions.Builder().pitch(0.0).build());
+        MapInitOptions options = new MapInitOptions(reactContext, MapInitOptions.Companion.getDefaultMapOptions(reactContext).toBuilder()
+                .glyphsRasterizationOptions(new GlyphsRasterizationOptions.Builder().rasterizationMode(GlyphsRasterizationMode.ALL_GLYPHS_RASTERIZED_LOCALLY).build()).build(),
+                MapInitOptions.Companion.getDefaultPluginList(), new CameraOptions.Builder().pitch(0.0).build());
         view = new MapView(reactContext, options);
         return view;
     }
@@ -63,6 +67,39 @@ public class MapsIndoorsViewManager extends ViewGroupManager<MapView> {
     @Override
     public Map<String, Integer> getCommandsMap() {
         return MapBuilder.of("create", COMMAND_CREATE);
+    }
+
+    @Override
+    public void receiveCommand(@NonNull MapView root, int commandId, @Nullable ReadableArray args) {
+        super.receiveCommand(root, commandId, args);
+        if (commandId == COMMAND_CREATE) {
+            int reactNativeViewId = args.getInt(0);
+
+            createMapFragment(root, reactNativeViewId);
+
+            if (!args.isNull(1)) {
+                MPCameraPosition cameraPosition = gson.fromJson(args.getString(1), MPCameraPosition.class);
+                CameraState cameraState = view.getMapboxMap().getCameraState();
+                view.getMapboxMap().setCamera(new CameraOptions.Builder()
+                        .center(Point.fromLngLat(cameraPosition.target.getLng(), cameraPosition.target.getLat()))
+                        .zoom(cameraPosition.zoom != null ? Double.valueOf(cameraPosition.zoom) : cameraState.getZoom())
+                        .pitch(cameraPosition.tilt != null ? Double.valueOf(cameraPosition.tilt) : cameraState.getPitch())
+                        .bearing(cameraPosition.bearing != null ? Double.valueOf(cameraPosition.bearing) : cameraState.getBearing())
+                        .build());
+            }
+
+            if (!args.isNull(2)) {
+                if (args.getBoolean(2)) {
+                    CompassUtils.getCompass(view).setEnabled(true);
+                }else {
+                    CompassUtils.getCompass(view).setEnabled(false);
+                }
+            }
+
+            if (!args.isNull(3)) {
+                view.getMapboxMap().loadStyle(args.getString(3));
+            }
+        }
     }
 
     @Override
@@ -89,7 +126,7 @@ public class MapsIndoorsViewManager extends ViewGroupManager<MapView> {
             if (!args.isNull(2)) {
                 if (args.getBoolean(2)) {
                     CompassUtils.getCompass(view).setEnabled(true);
-                }else {
+                }else {      
                     CompassUtils.getCompass(view).setEnabled(false);
                 }
             }

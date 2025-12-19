@@ -8,7 +8,7 @@ import MapboxMaps
 
 @objc(MapsIndoorsViewManager)
 class MapsIndoorsViewManager : RCTViewManager {
-    @objc override static func requiresMainQueueSetup() -> Bool {return false}
+    @objc override static func requiresMainQueueSetup() -> Bool {return true}
     
     var mapView: MapView? = nil
 
@@ -21,8 +21,9 @@ class MapsIndoorsViewManager : RCTViewManager {
                             pitch: 0
                         )
         
-        let options = MapInitOptions(cameraOptions: cameraOptions)
-        
+        let options = MapInitOptions(
+            mapOptions: MapOptions(glyphsRasterizationOptions: GlyphsRasterizationOptions(rasterizationMode: .allGlyphsRasterizedLocally, fontFamily: nil)),
+            cameraOptions: cameraOptions)
         
         mapView = MapView(frame: CGRect(x: 0, y: 0, width: 64, height: 64), mapInitOptions: options)
         
@@ -141,27 +142,27 @@ class MapBoxView: RCMapView {
         return update
     }
     
-    func animateCamera(cameraUpdate: CameraUpdate, duration: Int) throws {
-        let cameraOption: CameraOptions
-        
-        cameraOption = try makeCameraUpdate(cameraUpdate: cameraUpdate)
-        
+    func animateCamera(cameraUpdate: CameraUpdate, duration: Int) {
         DispatchQueue.main.async { [self] in
+            let cameraOption = try? makeCameraUpdate(cameraUpdate: cameraUpdate)
+            if cameraOption == nil {
+                return
+            }
             if (duration != 0) {
-                mapboxView.camera.ease(to: cameraOption, duration: TimeInterval(duration/1000))
+                mapboxView.camera.ease(to: cameraOption!, duration: TimeInterval(duration/1000))
             } else {
-                mapboxView.mapboxMap.setCamera(to: cameraOption)
+                mapboxView.mapboxMap.setCamera(to: cameraOption!)
             }
         }
     }
     
-    func moveCamera(cameraUpdate: CameraUpdate) throws {
-        let cameraOption: CameraOptions
-        
-        cameraOption = try makeCameraUpdate(cameraUpdate: cameraUpdate)
-        
+    func moveCamera(cameraUpdate: CameraUpdate) {
         DispatchQueue.main.async { [self] in
-            mapboxView.mapboxMap.setCamera(to: cameraOption)
+            let cameraOption = try? makeCameraUpdate(cameraUpdate: cameraUpdate)
+            if cameraOption == nil {
+                return
+            }
+            mapboxView.mapboxMap.setCamera(to: cameraOption!)
         }
     }
     
