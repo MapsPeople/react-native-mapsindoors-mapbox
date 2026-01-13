@@ -14,7 +14,7 @@ The MapsIndoors SDK requires iOS 15.6, so make sure that your podfile is configu
 Disable flipper and add !use_frameworks as well as adding config.build_settings to post install script.
 
 ```pod
-platform :ios, '15.6
+platform :ios, '15.6'
 
 flipper_config = FlipperConfiguration.disabled
 
@@ -121,7 +121,7 @@ To enable it, you need to add the configuration in your expo configuration.
         "expo-build-properties",
         {
           "ios": {
-            "deploymentTarget": "15.1"
+            "deploymentTarget": "15.6"
           }
         }
       ],
