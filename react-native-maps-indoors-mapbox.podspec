@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   s.source_files = "ios/**/*.{h,c,cc,cpp,m,mm,swift}"
   s.requires_arc = true
 
-  s.dependency "React"
-  s.dependency "MapsIndoorsMapbox11", "4.15.6"
-  s.dependency "MapsIndoorsCodable", "4.15.6"
+  install_modules_dependencies(s)
+  s.dependency "MapsIndoorsMapbox11", "4.17.2"
+  s.dependency "MapsIndoorsCodable", "4.17.2"
 end

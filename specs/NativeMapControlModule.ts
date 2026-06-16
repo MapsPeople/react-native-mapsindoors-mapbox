@@ -1,0 +1,62 @@
+import type {TurboModule} from 'react-native';
+import {TurboModuleRegistry} from 'react-native';
+
+export interface Spec extends TurboModule {
+  addListener(eventName: string): void;
+  removeListeners(count: number): void;
+
+  initMapControl(config: Object): Promise<null>;
+  clearFilter(): Promise<null>;
+  setFilter(filterJSON: string, filterBehaviorJSON: string): Promise<boolean>;
+  setFilterWithLocations(locationIdsJSON: string, filterBehaviorJSON: string): Promise<boolean>;
+  setHighlight(locationIdsJSON: string, highlightBehaviorJSON: string): Promise<boolean>;
+  clearHighlight(): Promise<null>;
+  showUserPosition(show: boolean): Promise<null>;
+  isUserPositionShown(): Promise<boolean>;
+  goTo(entityJSON: string, entityType: string, maxZoom: number): Promise<null>;
+  getCurrentVenue(): Promise<string | null>;
+  getCurrentBuilding(): Promise<string | null>;
+  selectVenue(venueJSON: string, moveCamera: boolean): Promise<null>;
+  selectBuilding(buildingJSON: string, moveCamera: boolean): Promise<null>;
+  selectLocation(locationJSON: string, behaviorJSON: string): Promise<null>;
+  selectLocationWithId(locationId: string, behaviorJSON: string): Promise<null>;
+  setMapPadding(start: number, top: number, end: number, bottom: number): Promise<null>;
+  getMapViewPaddingStart(): Promise<number>;
+  getMapViewPaddingTop(): Promise<number>;
+  getMapViewPaddingEnd(): Promise<number>;
+  getMapViewPaddingBottom(): Promise<number>;
+  setMapStyle(mapStyleJSON: string): Promise<null>;
+  getMapStyle(): Promise<string | null>;
+  showInfoWindowOnClickedLocation(show: boolean): Promise<null>;
+  deSelectLocation(): Promise<null>;
+  getCurrentBuildingFloor(): Promise<string | null>;
+  getCurrentFloorIndex(): Promise<number>;
+  getCurrentMapsIndoorsZoom(): Promise<number>;
+  selectFloor(floorIndex: number): Promise<null>;
+  isFloorSelectorHidden(): Promise<boolean>;
+  hideFloorSelector(hide: boolean): Promise<null>;
+  enableLiveData(domainType: string, hasListener: boolean): Promise<null>;
+  disableLiveData(domainType: string): Promise<null>;
+  animateCamera(updateJSON: string, duration: number): Promise<null>;
+  moveCamera(updateJSON: string): Promise<null>;
+  getCurrentCameraPosition(): Promise<string>;
+  setFloorSelector(setup: boolean, isAutoFloorChangeEnabled: boolean): Promise<null>;
+  onFloorSelectionChanged(floorJSON: string): void;
+  setLabelOptions(textSize: number, color: string, showHalo: boolean): Promise<null>;
+  setOnMapClickListener(setup: boolean, consumeEvent: boolean): void;
+  setOnLocationSelectedListener(setup: boolean, consumeEvent: boolean): void;
+  setOnCurrentVenueChangedListener(setup: boolean): void;
+  setOnCurrentBuildingChangedListener(setup: boolean): void;
+  setOnMarkerClickListener(setup: boolean, consumeEvent: boolean): void;
+  setOnMarkerInfoWindowClickListener(setup: boolean): void;
+  setMPCameraEventListener(setup: boolean): void;
+  setOnFloorUpdateListener(setup: boolean): void;
+  setBuildingSelectionMode(selectionMode: number): Promise<null>;
+  getBuildingSelectionMode(): Promise<number>;
+  setFloorSelectionMode(selectionMode: number): Promise<null>;
+  getFloorSelectionMode(): Promise<number>;
+  setHiddenFeatures(featuresJSON: string): Promise<null>;
+  getHiddenFeatures(): Promise<string>;
+}
+
+export default TurboModuleRegistry.getEnforcing<Spec>('MapControlModule');
