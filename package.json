@@ -1,11 +1,12 @@
 {
     "name": "@mapsindoors/react-native-maps-indoors-mapbox",
     "title": "React Native MapsIndoors Mapbox",
-    "version": "2.6.2",
+    "version": "2.7.0",
     "description": "React Native MapsIndoors component with mapbox",
     "react-native": "index.ts",
     "files": [
         "src/",
+        "specs/",
         "README.md",
         "android",
         "index.ts",
@@ -50,5 +51,13 @@
     },
     "bugs": {
         "url": "https://github.com/MapsPeople/react-native-mapsindoors-mapbox/issues"
+    },
+    "codegenConfig": {
+        "name": "MapsIndoorsMapboxSpec",
+        "type": "all",
+        "jsSrcsDir": "specs",
+        "android": {
+            "javaPackageName": "com.mapsindoorsrn"
+        }
     }
 }

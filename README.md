@@ -2,7 +2,16 @@
 
 ## Documentation
 
-Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.6.0/index.html) to get an overview of what the MapsIndoors SDK offers.
+Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.7.0/index.html) to get an overview of what the MapsIndoors SDK offers.
+
+## Changelog
+
+### 2.7.0
+
+- Updated MapsIndoors Android SDK to 4.18.3
+- Updated MapsIndoors iOS SDK to 4.17.2
+- Added React Native New Architecture support (TurboModules / Fabric interop layer)
+- Added `setPolylineColors` to `MPDirectionsRenderer` to allow customizing the foreground and background color of the displayed route
 
 ## Getting started
 
