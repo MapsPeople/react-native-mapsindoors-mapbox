@@ -1,5 +1,15 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+# Publishes the package to npm when a GitHub release is created.
+#
+# Authentication uses npm *trusted publishing* (OIDC): the job exchanges a short-lived GitHub
+# Actions identity token for a scoped npm publish token, so there is no long-lived NPM_TOKEN
+# secret to rotate or leak, and npm attaches a provenance attestation automatically.
+#
+# The trusted publisher is registered per package on npmjs.com against this repository AND this
+# workflow's filename. Renaming or moving this file breaks publishing until the registration is
+# updated to match. See https://docs.npmjs.com/trusted-publishers
+#
+# Node 24 (LTS) is required, not merely preferred: the OIDC exchange needs npm >= 11.5.1, and the
+# Node 22 line bundles npm 10.9.x for its entire lifetime. Do not lower node-version below 24.
 
 name: Node.js Package
 
@@ -18,7 +28,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
       - run: npm ci
       # - run: npm test
 
@@ -31,9 +41,8 @@ jobs:
           submodules: 'recursive'
       - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
           registry-url: https://registry.npmjs.org/
       - run: npm ci
-      - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+      # A GitHub prerelease publishes under the 'next' dist-tag so it can never displace 'latest'.
+      - run: npm publish --access public --tag ${{ github.event.release.prerelease && 'next' || 'latest' }}
