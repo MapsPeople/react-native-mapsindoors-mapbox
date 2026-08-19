@@ -2,9 +2,27 @@
 
 ## Documentation
 
-Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.7.0/index.html) to get an overview of what the MapsIndoors SDK offers.
+Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.8.0/index.html) to get an overview of what the MapsIndoors SDK offers.
 
 ## Changelog
+
+### [2.8.0] - 2026-08-17
+
+#### Changed
+
+- **Breaking:** raised the minimum iOS deployment target to 16.0 (from 15.6), as required by the
+  MapsIndoors iOS SDK. Update your Podfile, and `expo-build-properties`' `deploymentTarget` if you
+  use Expo - see [iOS](#ios)
+- **Breaking:** raised the minimum supported React Native version to 0.75.0
+- Updated MapsIndoors Android SDK to 4.18.6
+- Updated MapsIndoors iOS SDK to 4.19.1
+
+#### Fixed
+
+- The map turning black after navigating away from and back to the map screen when using
+  `react-native-screens`' native stack
+- The map continuing to render in the background while the app was backgrounded, which wasted
+  battery
 
 ### 2.7.0
 
@@ -19,11 +37,12 @@ Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/refe
 
 ### iOS
 
-The MapsIndoors SDK requires iOS 15.6, so make sure that your podfile is configured for iOS 15.6.
-Disable flipper and add !use_frameworks as well as adding config.build_settings to post install script.
+The MapsIndoors SDK requires iOS 16.0, so make sure that your podfile is configured for iOS 16.0.
+Disable flipper and add `use_frameworks!` as well as adding config.build_settings to post install
+script.
 
 ```pod
-platform :ios, '15.6'
+platform :ios, '16.0'
 
 flipper_config = FlipperConfiguration.disabled
 
@@ -34,7 +53,7 @@ target 'MyApp' do
   ...
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.6'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
     end
    end
 end
@@ -104,8 +123,9 @@ allprojects {
 
 This library implements native modules and can't be used with ExpoGO, developments build is required [Delopment Builds](https://docs.expo.dev/develop/development-builds/introduction/)
 
-To build and run correctly, the native ios linkage required to being set as dynamic.
-Project configuration can be done with the expo module expo-build-properties.
+To build and run correctly, the native ios linkage is required to be set as dynamic
+(`useFrameworks: "dynamic"`). Project configuration can be done with the expo module
+expo-build-properties.
 
 with npx :  
 `$ npx expo install expo-build-properties`
@@ -130,7 +150,8 @@ To enable it, you need to add the configuration in your expo configuration.
         "expo-build-properties",
         {
           "ios": {
-            "deploymentTarget": "15.6"
+            "deploymentTarget": "16.0",
+            "useFrameworks": "dynamic"
           }
         }
       ],
@@ -139,7 +160,7 @@ To enable it, you need to add the configuration in your expo configuration.
         {
           "publicToken": "PUBLIC_TOKEN", // your map public token
           "downloadToken": "DOWNLOAD_TOKEN", // your download token
-          "staticPods": true // OPTIONAL, add if your project use static linkage for pods (ex: "useFrameworks": "static" with expo-build-properties)
+          "staticPods": true // OPTIONAL, add if your project uses static linkage for pods (ex: "useFrameworks": "static" with expo-build-properties)
         }
       ]
     ]
@@ -253,3 +274,5 @@ const changeTypePolygonColor = async (type: string, color: string) => {
     typeDisplayRule?.setPolygonFillColor(color);
 }
 ```
+
+[2.8.0]: https://github.com/MapsPeople/react-native-mapsindoors-mapbox/compare/2.7.0...2.8.0

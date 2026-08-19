@@ -181,7 +181,7 @@ const {
           `post_install do |installer|\n
       installer.pods_project.targets.each do |target|
         target.build_configurations.each do |config|
-            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.6'
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.0'
         end
       end\n`
         );

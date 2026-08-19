@@ -1,4 +1,4 @@
-[submodule "android/src/main/java/com/reactlibrary/core"]
+[submodule "android/src/main/java/com/mapsindoorsrn/core"]
 	path = android/src/main/java/com/mapsindoorsrn/core
 	url = ../react-native-mapsindoors-core-android.git
 [submodule "ios/core"]

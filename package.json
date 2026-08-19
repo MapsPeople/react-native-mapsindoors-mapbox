@@ -1,7 +1,7 @@
 {
     "name": "@mapsindoors/react-native-maps-indoors-mapbox",
     "title": "React Native MapsIndoors Mapbox",
-    "version": "2.7.0",
+    "version": "2.8.0",
     "description": "React Native MapsIndoors component with mapbox",
     "react-native": "index.ts",
     "files": [
@@ -37,7 +37,7 @@
     "homepage": "https://www.mapspeople.com/mapsindoors",
     "peerDependencies": {
         "react": ">=18.2.0",
-        "react-native": ">=0.60.0-rc.0 <1.0.x"
+        "react-native": ">=0.75.0 <1.0.x"
     },
     "devDependencies": {
         "@tsconfig/react-native": "^3.0.2",
