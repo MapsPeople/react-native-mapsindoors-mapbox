@@ -6,6 +6,12 @@ Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/refe
 
 ## Changelog
 
+### Unreleased
+
+- Added `getIconZoomFactor`/`setIconZoomFactor` to `MPDisplayRule`, exposing zoom-responsive icon scaling. The factor is the multiplier an icon grows by across the solution's icon-scale zoom band; `1.0` is neutral. Values must be finite and within `> 0 && <= 4` — anything else is ignored and the rule keeps its current factor.
+- Added read-only `iconScaleZoomFrom`/`iconScaleZoomTo` to `MPSolutionConfig`, the solution's icon-scale zoom band in MapsIndoors zoom. Both are `undefined` when the solution has not opted in to icon scaling.
+- Requires MapsIndoors Android and iOS SDK versions that ship the icon-scaling API. The native dependency pins are NOT bumped by this change - they must be raised to an SDK release that ships the icon-scaling API before this works.
+
 ### 2.7.0
 
 - Updated MapsIndoors Android SDK to 4.18.3

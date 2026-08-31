@@ -33,6 +33,8 @@ export interface Spec extends TurboModule {
   setIconSize(displayRuleId: string, size: string): Promise<null>;
   getIconScale(displayRuleId: string): Promise<number | null>;
   setIconScale(displayRuleId: string, scale: number): Promise<null>;
+  getIconZoomFactor(displayRuleId: string): Promise<number | null>;
+  setIconZoomFactor(displayRuleId: string, value: number): Promise<null>;
   getIconPlacement(displayRuleId: string): Promise<number | null>;
   setIconPlacement(displayRuleId: string, placement: number): Promise<null>;
 
