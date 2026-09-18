@@ -7,6 +7,7 @@ import MPQuery from './src/core/MPQuery';
 import MPError from './src/core/MPError';
 import MPFilter from './src/core/MPFilter';
 import MPBounds from './src/core/MPBounds';
+import { normalizeLanguageTag, resolveLanguageTag } from './src/core/MPLanguageTag';
 import { MPLocationType } from './src/core/MPLocationType';
 import { MPLocationPropertyNames } from './src/core/MPLocationPropertyNames';
 import { MPLabelType } from './src/core/MPLabelType';
@@ -36,8 +37,15 @@ import MPRouteLeg from './src/core/MPRouteLeg';
 import MPRouteStep from './src/core/MPRouteStep';
 import MPRouteProperty from './src/core/MPRouteProperty';
 import MPDirectionsRenderer from './src/core/MPDirectionsRenderer';
+import MPDirectionsRendererOptions from './src/core/MPDirectionsRendererOptions';
+import MPRouteMarkerDisplayRule from './src/core/MPRouteMarkerDisplayRule';
+import MPLegBoundaryIcons from './src/core/MPLegBoundaryIcons';
 import MPDirectionsService from './src/core/MPDirectionsService';
 import { MPCameraViewFitMode } from './src/core/MPCameraViewFitMode';
+import { MPStrokeStyle } from './src/core/MPStrokeStyle';
+import { MPRouteAnimationType } from './src/core/MPRouteAnimationType';
+import { MPRouteStampType } from './src/core/MPRouteStampType';
+import { MPRouteArrowStyle } from './src/core/MPRouteArrowStyle';
 import MPCameraPosition from './src/core/MPCameraPosition';
 import MPFilterBehavior from './src/core/MPFilterBehavior';
 import MPHighlightBehavior from './src/core/MPHighlightBehavior';
@@ -60,6 +68,7 @@ import { OnFloorSelectionChangedListener } from './src/core/OnFloorSelectionChan
 import { OnVenueFoundAtCameraTargetListener } from './src/core/OnVenueFoundAtCameraTargetListener';
 import { OnBuildingFoundAtCameraTargetListener } from './src/core/OnBuildingFoundAtCameraTargetListener';
 import { OnLegSelectedListener } from './src/core/OnLegSelectedListener';
+import { OnBaseMapCacheProgressListener } from './src/core/OnBaseMapCacheProgressListener';
 import MPBuildingCollection from './src/core/MPBuildingCollection';
 import MPVenueCollection from './src/core/MPVenueCollection';
 import MPCategoryCollection from './src/core/MPCategoryCollection';
@@ -95,6 +104,9 @@ import { MPRouteCoordinateParams } from './src/core/MPRouteCoordinate';
 import { MPHighlightBehaviorParams } from './src/core/MPHighlightBehavior';
 import { RouteStopIconConfig } from './src/core/RouteStopIconConfig';
 import { MPRouteStopIconConfigParams } from './src/core/MPRouteStopIconConfig';
+import { MPDirectionsRendererOptionsParams } from './src/core/MPDirectionsRendererOptions';
+import { MPRouteMarkerDisplayRuleParams } from './src/core/MPRouteMarkerDisplayRule';
+import { MPLegBoundaryIconsParams } from './src/core/MPLegBoundaryIcons';
 import { MPPOITypeParams } from './src/core/MPPOIType';
 import { MPSelectionMode } from './src/core/MPSelectionMode'; 
 import { MPFeatureType } from './src/core/MPFeatureTypes';
@@ -138,8 +150,13 @@ export {
     MPVenue,
     MPVenueInfo,
     MPLocationType,
+    normalizeLanguageTag,
+    resolveLanguageTag,
     MPLocationPropertyNames,
     MPDirectionsRenderer,
+    MPDirectionsRendererOptions,
+    MPRouteMarkerDisplayRule,
+    MPLegBoundaryIcons,
     MPDirectionsService,
     MPRoute,
     MPRouteCoordinate,
@@ -147,6 +164,10 @@ export {
     MPRouteProperty,
     MPRouteStep,
     MPCameraViewFitMode,
+    MPStrokeStyle,
+    MPRouteAnimationType,
+    MPRouteStampType,
+    MPRouteArrowStyle,
     MPBuildingCollection,
     MPVenueCollection,
     MPCategoryCollection,
@@ -179,6 +200,7 @@ export type {
     OnMarkerInfoWindowClickListener,
     OnLiveLocationUpdateListener,
     OnLegSelectedListener,
+    OnBaseMapCacheProgressListener,
     MPEntity,
     MPFloorParams,
     MPQueryParams,
@@ -206,6 +228,9 @@ export type {
     MPSolutionConfigParams,
     MPRouteCoordinateParams,
     MPRouteStopIconConfigParams,
+    MPDirectionsRendererOptionsParams,
+    MPRouteMarkerDisplayRuleParams,
+    MPLegBoundaryIconsParams,
     RouteStopIconConfig,
     MPPOITypeParams
 };

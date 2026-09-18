@@ -16,6 +16,9 @@ export interface Spec extends TurboModule {
   setRoute(routeString: string, stopIcons: string, legIndex: number): Promise<null>;
   setAnimatedPolyline(animated: boolean, repeated: boolean, duration: number): Promise<null>;
   setPolyLineColors(foregroundString: string, backgroundString: string): Promise<null>;
+  setOptions(optionsString: string): Promise<null>;
+  getOptions(): Promise<string>;
+  finishGuidance(usagePercentage: number): Promise<null>;
   showRouteLegButtons(value: boolean): Promise<null>;
   setDefaultRouteStopIcon(iconString: string): Promise<null>;
 }

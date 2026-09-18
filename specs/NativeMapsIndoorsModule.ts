@@ -2,6 +2,8 @@ import type {TurboModule} from 'react-native';
 import {TurboModuleRegistry} from 'react-native';
 
 export interface Spec extends TurboModule {
+  addListener(eventName: string): void;
+  removeListeners(count: number): void;
   loadMapsIndoors(apiKey: string, optionalStrings: Array<string> | null): Promise<null>;
   getDefaultVenue(): Promise<string | null>;
   getVenues(): Promise<string>;
@@ -16,7 +18,7 @@ export interface Spec extends TurboModule {
   getLocationById(id: string): Promise<string | null>;
   getLocationsByExternalIds(ids: Array<string>): Promise<string>;
   getMapStyles(): Promise<string>;
-  getSolution(): Promise<string | null>;
+  getSolution(): Promise<string>;
   getLocationsAsync(query: string, filter: string): Promise<string>;
   locationDisplayRuleExists(locationId: string): Promise<boolean>;
   displayRuleNameExists(name: string): Promise<boolean>;
@@ -38,6 +40,9 @@ export interface Spec extends TurboModule {
   removeVenuesToSync(venues: Array<string>): Promise<null>;
   getSyncedVenues(): Promise<Array<string> | null>;
   cacheData(apiKey: string): Promise<boolean>;
+  isBaseMapCachingSupported(): Promise<boolean>;
+  setBaseMapTilesEnabled(enabled: boolean, apiKey: string): Promise<null>;
+  synchronizeBaseMapTiles(apiKeys: Array<string> | null): Promise<null>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('MapsIndoorsModule');

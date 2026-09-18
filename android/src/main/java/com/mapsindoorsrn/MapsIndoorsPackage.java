@@ -11,6 +11,9 @@ import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.uimanager.ViewManager;
 import com.mapsindoors.core.OnResultReadyListener;
 import com.mapsindoors.core.errors.MIError;
+import com.mapsindoors.mapbox.MPMapboxBaseMapCacheProvider;
+import com.mapsindoors.mapbox.MPMapboxStyleSource;
+import com.mapsindoorsrn.core.BaseMapCacheProviders;
 import com.mapsindoorsrn.core.DirectionsRendererModule;
 import com.mapsindoorsrn.core.DirectionsServiceModule;
 import com.mapsindoorsrn.core.MPDisplayRuleModule;
@@ -27,6 +30,13 @@ public class MapsIndoorsPackage extends TurboReactPackage implements OnResultRea
     private volatile MapControlModule mapControlModule;
     private MapsIndoorsViewManager viewManager;
     private ReactApplicationContext mContext;
+
+    public MapsIndoorsPackage() {
+        // The style is an explicit choice with no default in the SDK, because caching the wrong
+        // style is silent until the device goes offline. MapsIndoorsDefault is the right one here:
+        // the React Native MapView always renders the MapsIndoors style.
+        BaseMapCacheProviders.setFactory(() -> new MPMapboxBaseMapCacheProvider(MPMapboxStyleSource.MapsIndoorsDefault.INSTANCE));
+    }
 
     private MapControlModule getOrCreateMapControlModule(ReactApplicationContext context) {
         if (mapControlModule == null) {

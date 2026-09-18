@@ -2,9 +2,92 @@
 
 ## Documentation
 
-Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.8.0/index.html) to get an overview of what the MapsIndoors SDK offers.
+Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.9.0/index.html) to get an overview of what the MapsIndoors SDK offers.
 
 ## Changelog
+
+### [2.9.0] - 2026-09-17
+
+#### Added
+
+##### Offline base map tiles support [Mapbox]
+
+- Offline Mapbox base-map tiles. `MapsIndoors.setBaseMapTilesEnabled(enabled, apiKey)` marks a
+  solution for base-map caching, and `MapsIndoors.synchronizeBaseMapTiles(onProgress?, apiKeys?)`
+  downloads the tiles - the outdoor map underneath MapsIndoors, which `cacheData` does not cover.
+  Both are needed for a map that renders with no network connection. Progress is reported through
+  the optional `onProgress` listener, since the download can take minutes.
+  `MapsIndoors.isBaseMapCachingSupported()` reports whether the map provider can cache at all
+
+##### Improved DirectionsRenderer
+
+- `MPDirectionsRenderer.setOptions(options)` and `getOptions()`, which style a rendered route from a
+  single `MPDirectionsRendererOptions` object - line color, opacity, weight and `MPStrokeStyle`, the
+  background halo, the animated overlay and its `MPRouteAnimationType`, a repeating
+  `MPRouteStampType` stamp with its `MPRouteArrowStyle`, `MPRouteMarkerDisplayRule` styling for the
+  route's start and end markers, per connector `MPLegBoundaryIcons`, 3D elevation (Mapbox only) and
+  the camera's fit-bounds max zoom. Each option resolves on its own - the value set here, then the
+  solution level default from the CMS, then the SDK's built-in default - so options left out are
+  inherited rather than reset. This supersedes `setPolylineColors` and `setAnimatedPolyline`, which
+  are now deprecated
+- `MPDirectionsRenderer.finishGuidance(usagePercentage?)`, which signals that guidance on the
+  current route has finished, optionally supplying how much of the route was travelled
+
+##### Enhanced Language support
+
+- `resolveLanguageTag(tag, availableLanguages)` and `normalizeLanguageTag(tag)`, for turning a
+  device locale into the exact language tag a solution publishes before calling
+  `MapsIndoors.setLanguage`. `resolveLanguageTag('zh-Hant-TW', solution.availableLanguages)`
+  returns `'zh-Hant'`
+- `MPSolution.resolveLanguage(language)`, the same lookup against that solution's own languages
+#### Changed
+
+- Updated the MapsIndoors Android SDK to 4.22.0 and the iOS SDK to 4.20.0, the releases that carry
+  the base-map tile cache
+- `MPSolution.hasLanguage` now matches language tags the way the native SDKs do, instead of
+  requiring an exact string. Casing is ignored, the ICU underscore form is accepted (`zh_Hans`),
+  legacy region-only Chinese tags resolve to their script (`zh-CN` matches `zh-Hans`, `zh-TW`
+  matches `zh-Hant`), and a more specific tag falls back to a less specific one (`en-US` matches
+  `en`). It stays deliberately strict about ambiguity: bare `zh` does not match a solution that
+  publishes only `zh-Hans` and `zh-Hant`, because there is no way to tell which script is wanted
+- `MapsIndoors.setLanguage` documents what its returned boolean means on each platform. On Android
+  it is `false` for a language the solution does not have, and also while the SDK is still loading
+  or synchronizing - in which case the change is queued rather than lost. On iOS it reports only
+  that the tag was accepted, with no check against the solution. Read the language back with
+  `getLanguage` to confirm a change took effect
+- `MapsIndoors.setLanguage` resolves `false` for an empty language tag without calling into the
+  native SDK, matching Android's own precondition. iOS would otherwise accept it and store an
+  empty language
+
+#### Fixed
+
+- The iOS geometry helpers never decoded the polygon they were given, because
+  `JSONDecoder` is not polymorphic and the SDK's internal `mp_polygon` accessors are nil on a
+  freshly decoded value. `MPPolygon.contains` therefore always answered `false`, `getArea` always
+  `0`, and `distanceToClosestEdge` resolved `undefined` despite being typed `Promise<number>`. The
+  concrete geometry type is now decoded from the GeoJSON `type` discriminator, as on Android, so
+  multi-polygon geometry works by construction
+- Serialising SDK models to the bridge on Android walked native memory by reflection. `MPLocation`
+  holds an `MPIcon` whose layer holds an `android.graphics.Bitmap`, and the buffer behind a Bitmap
+  carries a `Cleaner` that is linked to every other live Cleaner in the process - so the work grew
+  with whatever the host app had allocated, not with the map data. This only showed up on physical
+  devices with a real app around them
+- `MapsIndoors.setLanguage` always resolved `null` on iOS, despite being typed `Promise<boolean>`.
+  It now resolves the native SDK's real result, as it already did on Android
+- `MapsIndoors.getAvailableLanguages` and `getDefaultLanguage` rejected with an unparseable error
+  on iOS when called before the solution had loaded, so the `MPError` never reached the caller.
+  Both now reject with an `MPError`, as they already did on Android
+- `MapsIndoors.getDefaultLanguage` resolved `null` on Android when no solution was loaded, despite
+  being typed `Promise<string>`. It now rejects with an `MPError`, matching iOS
+- `MapsIndoors.getSolution` resolved `null` on Android whenever no solution was loaded - including
+  the moment right after a language change, which reloads the solution. Callers either crashed in
+  `JSON.parse` or got a solution whose `availableLanguages` was `undefined`, so `hasLanguage`
+  answered `false` for every tag. It now rejects with an `MPError`, matching iOS
+- `MapsIndoors.getLocations` discarded a native rejection instead of propagating it, then failed
+  in `JSON.parse` with "Unexpected character: u". The real error now reaches the caller
+- `MPError.parse` threw a `SyntaxError` when a rejection did not carry the native SDK's JSON
+  payload - a bridge-level or JavaScript error - replacing the real message with "JSON Parse
+  error: Unexpected character". It now wraps such a message as an unknown error and keeps the text
 
 ### [2.8.0] - 2026-08-17
 
