@@ -2,11 +2,45 @@
 
 ## Documentation
 
-Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.9.0/index.html) to get an overview of what the MapsIndoors SDK offers.
+Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.9.1/index.html) to get an overview of what the MapsIndoors SDK offers.
 
 ## Changelog
 
-### [2.9.0] - 2026-09-17
+### [2.9.1] - 2026-10-15
+
+#### Changed
+
+- `MPRouteStopIconConfig.getImage()` returns a string instead of a `URL`, and a custom
+  `RouteStopIconConfig.getImage()` may return either
+- Updated the MapsIndoors Android and iOS SDKs to 4.23.0
+- On iOS, camera moves the SDK makes for you (`goTo`, selecting with `moveCamera`, filter, highlight
+  and route fits) are instant when the system's Reduce Motion setting is on
+- On Android, with a custom floor selector that turns automatic floor changes off, `goTo`,
+  `selectLocation`, `setFilter` and `setHighlight` keep the current floor
+- On iOS, `MapControl` and `MPDirectionsRenderer` promises settle once the map has applied the call,
+  not before
+- On iOS, the `MapControl.getCurrent*` getters and `isFloorSelectorHidden` resolve `null` when there
+  is no map control, instead of crashing
+- On iOS, `MPDirectionsRenderer.setRoute` and `setDefaultRouteStopIcon` reject when a URL icon fails
+  to download, instead of never settling
+
+#### Fixed
+
+- `MPDirectionsRenderer.setDefaultRouteStopIcon` and `setRoute` rejected an `MPRouteStopIconConfig`
+  stop icon with "Invalid URL" on React Native versions with a standards-compliant `URL`, such as
+  Expo 55, so the icon never reached the map. Labels containing `?` or `#` now work too
+- Setting `MapControl.showUserPosition` no longer crashes the app on iOS. The iOS SDK now accepts
+  the call from React Native's module thread, where 4.20.0 required the main thread
+- `MapControl` and `MPDirectionsRenderer` calls no longer crash the app on iOS. They now reach the map
+  on the main thread, in the order they were made
+- `MPDirectionsRenderer.setRoute` and `setDefaultRouteStopIcon` with URL icons no longer overwrite a
+  later `setRoute`, `clear` or `setDefaultRouteStopIcon` when their download finishes last
+- The published package no longer contains the core unit tests (`src/core/__tests__`)
+- `MPCameraPosition.create` no longer swaps tilt and bearing, so reading the camera with
+  `getCurrentCameraPosition` and passing the result back to `animateCamera` keeps the map's pitch
+  and rotation
+
+### [2.9.0] - 2026-09-18
 
 #### Added
 
