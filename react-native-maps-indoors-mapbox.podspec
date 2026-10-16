@@ -21,6 +21,10 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/github_account/react-native-maps-indoors-mapbox.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,c,cc,cpp,m,mm,swift}"
+  # ios/core carries a SwiftPM manifest and unit tests for its React-free helpers (SPEX-2686). They
+  # are run with `swift test` in that repository and must not be compiled into the pod, nor must the
+  # build products `swift test` leaves in .build (they include a generated `@main` test runner).
+  s.exclude_files = "ios/core/Package.swift", "ios/core/Tests/**/*", "ios/core/.build/**/*"
   s.requires_arc = true
 
   install_modules_dependencies(s)
@@ -33,6 +37,6 @@ Pod::Spec.new do |s|
   # embeds the resulting dynamic frameworks into the app bundle, so the app builds and links but
   # dies at launch with `Library not loaded: @rpath/MapsIndoorsCore.framework/MapsIndoorsCore`.
   # See SPEX-2429 before reintroducing SPM here.
-  s.dependency "MapsIndoorsMapbox11", "4.20.0"
-  s.dependency "MapsIndoorsCodable", "4.20.0"
+  s.dependency "MapsIndoorsMapbox11", "4.23.0"
+  s.dependency "MapsIndoorsCodable", "4.23.0"
 end
