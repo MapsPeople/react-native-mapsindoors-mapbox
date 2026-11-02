@@ -2,11 +2,52 @@
 
 ## Documentation
 
-Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.9.1/index.html) to get an overview of what the MapsIndoors SDK offers.
+Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.10.0/index.html) to get an overview of what the MapsIndoors SDK offers.
 
 ## Changelog
 
-### [2.9.1] - 2026-10-15
+### [2.10.0] - 2026-11-02
+
+#### Added
+
+- MapsIndoors Insights now attributes sessions from this package to its own component -
+  `React Native/android SDK` or `React Native/iOS SDK`, with the package's published version -
+  instead of reporting them as the plain native SDK. The version travels on `MapsIndoors.load`,
+  which is when the native SDK starts the session and snapshots the component, so the first session
+  after a cold start is attributed too
+
+#### Changed
+
+- No Mapbox download token is needed any more (Mapbox SDK 11.8+ downloads are public). The Expo
+  plugin ignores `downloadToken`, warns when it is set, and no longer writes
+  `MAPBOX_DOWNLOADS_TOKEN` to `gradle.properties` or credentials to `~/.netrc`. The Mapbox Maven
+  repository is added without credentials
+- `MapControl.getCurrentFloorIndex`, `getCurrentMapsIndoorsZoom`, `isFloorSelectorHidden` and
+  `isUserPositionShown` reject when there is no map control. iOS resolved `null`, which reads as a
+  real floor index, zoom or `false`; Android crashed
+
+#### Fixed
+
+- On iOS, the blue dot now shows for a JavaScript position provider whose results leave out
+  `floorIndex`. Every such update was rejected, silently
+- On iOS, the blue dot now shows for a position provider set after calling `MapsIndoors.load` again
+  while the map stays mounted
+- Expo builds without `downloadToken` no longer fail to download Mapbox. The plugin wrote
+  `undefined` as the token to `gradle.properties` and `~/.netrc`, which Mapbox rejects with 401.
+  If an earlier plugin version wrote one, remove the `machine api.mapbox.com` entry from `~/.netrc`
+- Opening and closing a map no longer leaks memory on every visit. On iOS, setting a position
+  provider kept the map alive in a retain cycle. On Android, the map's `MapControl` was never
+  destroyed and a layout callback kept running for good, so each map stayed in memory; the
+  `MapControl` is now destroyed with its map view. Without one, Android `MapControl` calls now
+  reject, resolve `null` or do nothing, as on iOS, instead of crashing
+- On Android, `MapControl.clearFilter`, `clearHighlight` and `showUserPosition` resolve when there is
+  no map control, instead of never settling
+- MapsIndoors Insights `directions_started` and `directions_completed` events now carry the
+  route's origin and destination location and venue, as from native apps. Requires a route
+  `MPDirectionsService.getRoute` returned since the last `MapsIndoors.load`, among the ten most
+  recently used; a copy made through JSON qualifies, an edited route does not
+
+### [2.9.1] - 2026-10-16
 
 #### Changed
 
@@ -179,8 +220,7 @@ end
 
 #### Providing API key
 
-1. Navigate to your application settings and add your Mapbox public access token to info with the key `MBXAccessToken`
-2. Setup your secret access token for downloading the sdk. Read how to do this here: [Configure credentials](https://docs.mapbox.com/ios/maps/guides/install/#configure-credentials)
+Navigate to your application settings and add your Mapbox public access token to info with the key `MBXAccessToken`
 
 ### Android
 
@@ -208,9 +248,8 @@ To get the underlying Mapbox to function, you need to perform the following step
 ​
 The plugin Gradle project has trouble resolving the MapsIndoors dependency, so to ensure that it is resolved correctly, do the following:
 
-1. Navigate to the app `gradle.properties` and add the value MAPBOX_DOWNLOADS_TOKEN with your Mapbox download access token.
-2. Navigate to the app's project level `build.gradle`.
-3. add `maven { url 'https://maven.mapsindoors.com/' }` to `allprojects`/`repositories` as well as the Mapbox maven
+1. Navigate to the app's project level `build.gradle`.
+2. add `maven { url 'https://maven.mapsindoors.com/' }` to `allprojects`/`repositories` as well as the Mapbox maven
 ​
 
 ```groovy
@@ -219,19 +258,7 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://maven.mapsindoors.com/' }
-        maven {
-            url 'https://api.mapbox.com/downloads/v2/releases/maven'
-            authentication {
-                basic(BasicAuthentication)
-            }
-            credentials {
-                // Do not change the username below.
-                // This should always be `mapbox` (not your username).
-                username = "mapbox"
-                // Use the secret token you stored in gradle.properties as the password
-                password = project.properties['MAPBOX_DOWNLOADS_TOKEN'] ?: ""
-            }
-        }
+        maven { url 'https://api.mapbox.com/downloads/v2/releases/maven' }
     }
 }
 ```
@@ -276,7 +303,6 @@ To enable it, you need to add the configuration in your expo configuration.
         "@mapsindoors/react-native-maps-indoors-mapbox/app.plugin.js", // plugin ref
         {
           "publicToken": "PUBLIC_TOKEN", // your map public token
-          "downloadToken": "DOWNLOAD_TOKEN", // your download token
           "staticPods": true // OPTIONAL, add if your project uses static linkage for pods (ex: "useFrameworks": "static" with expo-build-properties)
         }
       ]

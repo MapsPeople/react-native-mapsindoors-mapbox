@@ -4,7 +4,7 @@ import {TurboModuleRegistry} from 'react-native';
 export interface Spec extends TurboModule {
   addListener(eventName: string): void;
   removeListeners(count: number): void;
-  loadMapsIndoors(apiKey: string, optionalStrings: Array<string> | null): Promise<null>;
+  loadMapsIndoors(apiKey: string, optionalStrings: Array<string> | null, sdkVersion: string | null): Promise<null>;
   getDefaultVenue(): Promise<string | null>;
   getVenues(): Promise<string>;
   getBuildings(): Promise<string>;
