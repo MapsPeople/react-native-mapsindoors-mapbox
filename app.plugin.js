@@ -1,6 +1,5 @@
 const {
     withProjectBuildGradle,
-    withGradleProperties,
     withPlugins,
     withDangerousMod,
     withInfoPlist,
@@ -47,24 +46,6 @@ const {
   };
   
   /**
-   * Plugin to add mapbox private token to gradle properties
-   * @param {*} config expo project config
-   * @param {*} token private token to set
-   * @returns modified config
-   */
-  const withGradleProps = (token) => (config) => {
-    return withGradleProperties(config, (modConf) => {
-      modConf.modResults.push({
-        type: "property",
-        key: "MAPBOX_DOWNLOADS_TOKEN",
-        value: token,
-      });
-  
-      return modConf;
-    });
-  };
-  
-  /**
    * Plugin to add mapsindoors maven repository
    * @param {*} config expo project config
    * @returns modified config
@@ -76,19 +57,7 @@ const {
   
         `maven { url 'https://www.jitpack.io' }
            maven { url 'https://maven.mapsindoors.com/' }
-           maven {
-               url 'https://api.mapbox.com/downloads/v2/releases/maven'
-               authentication {
-                   basic(BasicAuthentication)
-               }
-               credentials {
-                   // Do not change the username below.
-                   // This should always be 'mapbox' (not your username).
-                   username = "mapbox"
-                   // Use the secret token you stored in gradle.properties as the password
-                   password = project.properties['MAPBOX_DOWNLOADS_TOKEN'] ?: ""
-               }
-           }`
+           maven { url 'https://api.mapbox.com/downloads/v2/releases/maven' }`
       );
   
       modConf.modResults.contents = content;
@@ -107,57 +76,6 @@ const {
       modConf.modResults["MBXAccessToken"] = token;
       return modConf;
     });
-  };
-  
-  /**
-   * Plugin to add mapsindoors user system setup
-   * @param {*} token private token to set
-   * @param {*} config expo project config
-   */
-  const withiOSSecret = (token) => (config) => {
-    return withDangerousMod(config, [
-      "ios",
-      async (modConf) => {
-        const home = path.resolve(process.env.HOME);
-        const netrc = path.resolve(home, ".netrc");
-  
-        // conf to add
-        const conf = `machine api.mapbox.com
-    login mapbox
-    password ${token}
-    `;
-  
-        const exists = fs.existsSync(netrc);
-  
-        if (!exists) {
-          // no previous conf, write new one
-          fs.writeFileSync(netrc, conf, { flag: "w" });
-          fs.chmodSync(netrc, 0o600);
-        } else {
-          // get content
-          let content = fs.readFileSync(netrc, "utf-8");
-          const lines = content.split("\n");
-  
-          // check if mapbox conf exist
-          const found = lines.findIndex((line) =>
-            line.includes("machine api.mapbox.com")
-          );
-  
-          if (found >= 0) {
-            // remove previous mapbox conf
-            content = lines
-              .filter((_, idx) => ![found, found + 1, found + 2].includes(idx))
-              .join("\n");
-            fs.writeFileSync(netrc, content, { flag: "w" });
-          }
-  
-          // write new conf
-          fs.writeFileSync(netrc, conf, { flag: "a+" });
-        }
-  
-        return modConf;
-      },
-    ]);
   };
   
   /**
@@ -255,7 +173,7 @@ const {
   /**
    * Combine Expo configuration and properties
    * @param {*} config expo project config
-   * @param {*} {downloadToken} Mapbox download token
+   * @param {*} {downloadToken} deprecated and ignored: Mapbox SDK downloads need no token
    * @param {*} {publicToken} Mapbox public token
    * @returns modified config
    */
@@ -263,12 +181,16 @@ const {
     config,
     { downloadToken, publicToken, staticPods }
   ) => {
+    if (downloadToken !== undefined) {
+      console.warn(
+        "@mapsindoors/react-native-maps-indoors-mapbox: `downloadToken` is deprecated and ignored. Mapbox SDK downloads need no token; remove it from your plugin config."
+      );
+    }
+
     const plugins = [
-      withGradleProps(downloadToken),
       withAPIKeys(publicToken),
       withMavenRepo,
       withTokenInfoPlist(publicToken),
-      withiOSSecret(downloadToken),
       withPodfile,
       withStaticLinkage(staticPods),
     ];

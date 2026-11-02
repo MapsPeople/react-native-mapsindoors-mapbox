@@ -13,7 +13,7 @@ export interface Spec extends TurboModule {
   setCameraViewFitMode(cameraFitMode: number): Promise<null>;
   setCameraAnimationDuration(duration: number): Promise<null>;
   setOnLegSelectedListener(): Promise<null>;
-  setRoute(routeString: string, stopIcons: string, legIndex: number): Promise<null>;
+  setRoute(routeString: string, stopIcons: string, legIndex: number, routeId: string | null): Promise<null>;
   setAnimatedPolyline(animated: boolean, repeated: boolean, duration: number): Promise<null>;
   setPolyLineColors(foregroundString: string, backgroundString: string): Promise<null>;
   setOptions(optionsString: string): Promise<null>;

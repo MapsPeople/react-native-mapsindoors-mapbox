@@ -29,6 +29,8 @@ import java.util.Map;
 public class MapsIndoorsPackage extends TurboReactPackage implements OnResultReadyListener {
     private volatile MapControlModule mapControlModule;
     private MapsIndoorsViewManager viewManager;
+    // The view handed to MapControlModule. UI thread only.
+    @Nullable private MapboxMapView mapView;
     private ReactApplicationContext mContext;
 
     public MapsIndoorsPackage() {
@@ -102,13 +104,20 @@ public class MapsIndoorsPackage extends TurboReactPackage implements OnResultRea
     public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
         mContext = reactContext;
         viewManager = new MapsIndoorsViewManager(reactContext, this);
+        viewManager.setOnViewDroppedListener(view -> {
+            if (mapControlModule != null && mapView != null && mapView.getMapView() == view) {
+                mapControlModule.onViewDropped(mapView);
+                mapView = null;
+            }
+        });
         return Collections.singletonList(viewManager);
     }
 
     @Override
     public void onResultReady(@Nullable MIError miError) {
         if (mapControlModule != null && viewManager != null) {
-            mapControlModule.setView(new MapboxMapView(viewManager.getView(), mContext));
+            mapView = new MapboxMapView(viewManager.getView(), mContext);
+            mapControlModule.setView(mapView);
         }
     }
 }

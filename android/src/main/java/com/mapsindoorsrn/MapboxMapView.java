@@ -34,6 +34,10 @@ public class MapboxMapView implements RCMapView {
         mContext = context;
     }
 
+    MapView getMapView() {
+        return mMapView;
+    }
+
     @Override
     public void animateCamera(MPCameraUpdate cameraUpdate, Integer duration, OnResultReadyListener onFinished) {
         CameraOptions cameraOptions = toCameraOptions(cameraUpdate);
