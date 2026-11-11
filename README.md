@@ -2,9 +2,37 @@
 
 ## Documentation
 
-Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.10.0/index.html) to get an overview of what the MapsIndoors SDK offers.
+Visit [our reference document site](https://app.mapsindoors.com/mapsindoors/reference/react-native/mapbox/2.11.0/index.html) to get an overview of what the MapsIndoors SDK offers.
 
 ## Changelog
+
+### [2.11.0] - 2026-11-10
+
+#### Added
+
+- `MPDisplayRule.getIconZoomFactor` and `setIconZoomFactor`: how much a location's icon grows across
+  the solution's icon zoom range. The factor must be finite and within `0 < factor <= 4`; any other
+  value is ignored with a console warning. The default is `1`. Mapbox only: icons do not scale with
+  Google Maps
+- `MPSolutionConfig.iconScaleZoomFrom` and `iconScaleZoomTo`: the solution's icon zoom range, as the
+  solution stores it, or `undefined` when it is not set
+- Swift Package Manager support for apps built with React Native 0.88's `npx react-native spm`
+  (experimental). The package ships a `Package.swift` next to the podspec; CocoaPods stays supported
+
+#### Changed
+
+- Updated the MapsIndoors iOS SDK to 4.24.1, the release that carries base-map caching before the
+  first map
+- Updated the MapsIndoors Android SDK to 4.24.2
+
+#### Fixed
+
+- On iOS, `MapsIndoors.synchronizeBaseMapTiles` no longer rejects with error 9000 before
+  `MapControl.create` has run, so base-map tiles can be cached ahead of the first map, as on
+  Android. `MapsIndoors.isBaseMapCachingSupported` and `synchronizeBaseMapTiles` now agree on
+  Mapbox. Until `MapControl.create` has run, the MapsIndoors Mapbox style is cached
+- `MapControl.selectBuilding` and `MapControl.goTo` now pass a building's floors to the native SDK,
+  which used to receive the building without any
 
 ### [2.10.0] - 2026-11-02
 
@@ -217,6 +245,13 @@ target 'MyApp' do
 end
 ...
 ```
+
+#### Swift Package Manager (experimental)
+
+React Native 0.88 can build an iOS app without CocoaPods: run `npx react-native spm` in the app's
+`ios` folder. This package ships a `Package.swift` for that mode; CocoaPods stays supported. It needs
+iOS 16 and no extra setup. Verified on a bare React Native 0.88 app, not on Expo or with
+`app.plugin.js`.
 
 #### Providing API key
 

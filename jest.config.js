@@ -11,7 +11,10 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  testMatch: ['<rootDir>/src/core/__tests__/**/*.test.ts'],
+  testMatch: [
+    '<rootDir>/src/core/__tests__/**/*.test.ts',
+    '<rootDir>/__tests__/**/*.test.ts',
+  ],
   // src/core imports react-native for Platform and the native modules; stub it out at runtime.
   moduleNameMapper: {
     '^react-native$': '<rootDir>/__mocks__/react-native.ts',
